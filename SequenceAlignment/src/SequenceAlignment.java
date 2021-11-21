@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +27,7 @@ public class SequenceAlignment {
     private static boolean isSpaceOptimizationEnabled;
     private static boolean isPrinting2DMatrixEnabled;
     private static boolean isDivideAndConquerEnabled;
+    private static boolean isLoggingEnabled;
 
     static class Pair {
         String a;
@@ -60,14 +63,18 @@ public class SequenceAlignment {
     }
 
     private static void InitializeLogger() {
-        LOGGER.setLevel(Level.INFO);
+        if (isLoggingEnabled)
+            LOGGER.setLevel(Level.INFO);
+        else
+            LOGGER.setLevel(Level.OFF);
     }
 
     public static void main(String[] args) {
-        InitializeLogger();
         List<String> argsList = Arrays.asList(args);
-        LOGGER.log(Level.INFO, String.valueOf(argsList));
+        System.out.println(argsList);
+
         SetFlags(argsList);
+        InitializeLogger();
         MapCytokynesToIndices();
         Execute(argsList);
     }
@@ -87,12 +94,21 @@ public class SequenceAlignment {
         }
 
         Pair alignment;
-        if (isSpaceOptimizationEnabled) {
+        Instant start;
+        Instant end;
+        if (isSpaceOptimizationEnabled && isDivideAndConquerEnabled) {
+            System.out.println("Executing Divide & Conquer + Dynamic Programming Algorithm");
+            start = Instant.now();
             alignment = DivideAndConquerSequenceAlignment(inputStrings.a, inputStrings.b);
+            end = Instant.now();
         } else {
+            System.out.println("Executing Dynamic Programming (Needleman Wunsch) Algorithm");
+            start = Instant.now();
             alignment = NeedlemanWunsch(inputStrings.a, inputStrings.b);
+            end = Instant.now();
         }
         System.out.println(alignment);
+        System.out.printf("Time take for code execution: %d ns%n", Duration.between(start, end).toNanos());
     }
 
     private static void SetFlags(List<String> argsList) {
@@ -101,9 +117,20 @@ public class SequenceAlignment {
             System.exit(1);
         }
         isCustomEnabled = argsList.get(argsList.indexOf("-isCustomEnabled") + 1).equalsIgnoreCase("true");
+        LOGGER.log(Level.INFO, "isCustomEnabled is " + isCustomEnabled);
+
         isSpaceOptimizationEnabled = argsList.get(argsList.indexOf("-isSpaceOptimizationEnabled") + 1).equalsIgnoreCase("true");
+        LOGGER.log(Level.INFO, "isSpaceOptimizationEnabled is " + isSpaceOptimizationEnabled);
+
         isPrinting2DMatrixEnabled = argsList.get(argsList.indexOf("-isPrinting2DMatrixEnabled") + 1).equalsIgnoreCase("true");
+        LOGGER.log(Level.INFO, "isPrinting2DMatrixEnabled is " + isPrinting2DMatrixEnabled);
+
         isDivideAndConquerEnabled = argsList.get(argsList.indexOf("-isDivideAndConquerEnabled") + 1).equalsIgnoreCase("true");
+        LOGGER.log(Level.INFO, "isDivideAndConquerEnabled is " + isDivideAndConquerEnabled);
+
+        isLoggingEnabled = argsList.get(argsList.indexOf("-isLoggingEnabled") + 1).equalsIgnoreCase("true");
+        LOGGER.log(Level.INFO, "isLoggingEnabled is " + isLoggingEnabled);
+
         logLimitationsAndExit();
     }
 

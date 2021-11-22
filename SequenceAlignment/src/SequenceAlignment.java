@@ -44,6 +44,8 @@ public class SequenceAlignment {
 
         @Override
         public String toString() {
+            if (a.length() > 100)  a = String.format("%s...%s", a.substring(0, 50), a.substring(a.length() - 50 + 1));
+            if (b.length() > 100)  b = String.format("%s...%s", b.substring(0, 50), b.substring(a.length() - 50 + 1));
             return String.format("String #1: [%s]\nString #2: [%s]", a, b);
         }
     }
@@ -109,6 +111,13 @@ public class SequenceAlignment {
         }
         System.out.println(alignment);
         System.out.printf("Time take for code execution: %d ns%n", Duration.between(start, end).toNanos());
+    }
+
+    private static Pair swap(String a, String b) {
+        String temp = a;
+        a = b;
+        b = temp;
+        return new Pair(a, b);
     }
 
     private static void SetFlags(List<String> argsList) {

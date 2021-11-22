@@ -24,3 +24,8 @@ hs_err_pid*
 
 *.xml
 SequenceAlignment/SequenceAlignment.iml
+
+.DS_Store
+.idea
+*.iml
+target/

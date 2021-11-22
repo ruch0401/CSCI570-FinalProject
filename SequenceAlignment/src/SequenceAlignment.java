@@ -136,12 +136,12 @@ public class SequenceAlignment {
 
     private static void logLimitationsAndExit() {
         if (isDivideAndConquerEnabled && !isSpaceOptimizationEnabled) {
-            LOGGER.log(Level.SEVERE, "Divide and Conquer + DP can only run with Space Optimized enabled. Please set isSpaceOptimizationEnabled = true");
+            LOGGER.log(Level.SEVERE, "Divide and Conquer + DP can only run with Space Optimized enabled. Please set -isSpaceOptimizationEnabled = true or -isDivideAndConquerEnabled = false");
             System.exit(1);
         }
 
         if (isPrinting2DMatrixEnabled && isSpaceOptimizationEnabled) {
-            LOGGER.log(Level.SEVERE, "2D DP Matrix cannot be printed if Space Optimization is enabled. Please set isPrinting2DMatrixEnabled = false");
+            LOGGER.log(Level.SEVERE, "2D DP Matrix cannot be printed if Space Optimization is enabled. Please set -isPrinting2DMatrixEnabled = false");
             System.exit(1);
         }
     }

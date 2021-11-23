@@ -25,11 +25,11 @@ public class SequenceAlignmentMaven {
     public static String BASE_PATH;
     private final static Logger LOGGER = Logger.getLogger(SequenceAlignmentMaven.class.getName());
 
-    private static boolean isCustomEnabled;
-    private static boolean isSpaceOptimizationEnabled;
-    private static boolean isPrinting2DMatrixEnabled;
-    private static boolean isDivideAndConquerEnabled;
-    private static boolean isLoggingEnabled;
+    public static boolean isCustomEnabled;
+    public static boolean isSpaceOptimizationEnabled;
+    public static boolean isPrinting2DMatrixEnabled;
+    public static boolean isDivideAndConquerEnabled;
+    public static boolean isLoggingEnabled;
 
     static class Pair {
         String a;
@@ -66,7 +66,7 @@ public class SequenceAlignmentMaven {
         }
     }
 
-    private static void InitializeLogger() {
+    public static void InitializeLogger() {
         if (isLoggingEnabled)
             LOGGER.setLevel(Level.INFO);
         else
@@ -83,7 +83,7 @@ public class SequenceAlignmentMaven {
         Execute(argsList);
     }
 
-    private static void Execute(List<String> argsList) {
+    public static void Execute(List<String> argsList) {
         Pair inputStrings;
         if (isCustomEnabled) {
             LOGGER.log(Level.INFO, "Custom strings provided, skipping input creation from file");
@@ -122,7 +122,7 @@ public class SequenceAlignmentMaven {
         return new Pair(a, b);
     }
 
-    private static void SetFlags(List<String> argsList) {
+    public static void SetFlags(List<String> argsList) {
         if (argsList.size() == 0) {
             LOGGER.log(Level.SEVERE, "No arguments passed. Terminating code...");
             System.exit(1);
@@ -209,14 +209,14 @@ public class SequenceAlignmentMaven {
         return data;
     }
 
-    private static void MapCytokynesToIndices() {
+    public static void MapCytokynesToIndices() {
         hm.put('A', 0);
         hm.put('C', 1);
         hm.put('G', 2);
         hm.put('T', 3);
     }
 
-    private static Pair DivideAndConquerSequenceAlignment(String a, String b) {
+    public static Pair DivideAndConquerSequenceAlignment(String a, String b) {
         LOGGER.log(Level.INFO, String.format("Recursing for: [%s, %s]", a, b));
         StringBuilder a1 = new StringBuilder();
         StringBuilder b1 = new StringBuilder();
@@ -323,7 +323,7 @@ public class SequenceAlignmentMaven {
         return MISMATCH_COST[i][j];
     }
 
-    private static Pair NeedlemanWunsch(String a, String b) {
+    public static Pair NeedlemanWunsch(String a, String b) {
         int m = a.length();
         int n = b.length();
         int[][] dp = new int[m + 1][n + 1];
@@ -404,5 +404,27 @@ public class SequenceAlignmentMaven {
             }
             System.out.println();
         }
+    }
+
+    public static boolean isNWScoreEqual(Pair pair1, Pair pair2) {
+        int score1 = calculateScore(pair1);
+        int score2 = calculateScore(pair2);
+        return score1 == score2;
+    }
+
+    public static int calculateScore(Pair pair) {
+        String a = pair.a;
+        String b = pair.b;
+        int score = 0;
+        for (int i = 0; i < a.length(); i++) {
+            char c1 = a.charAt(i);
+            char c2 = b.charAt(i);
+            if (c1 == '_' || c2 == '_') {
+                score += GAP_PENALTY;
+            } else {
+                score += getMismatchCost(a.charAt(i), b.charAt(i));
+            }
+        }
+        return score;
     }
 }

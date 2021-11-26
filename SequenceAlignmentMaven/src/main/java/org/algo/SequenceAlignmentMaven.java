@@ -1,6 +1,7 @@
 package org.algo;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,6 +32,8 @@ public class SequenceAlignmentMaven {
     public static boolean isDivideAndConquerEnabled;
     public static boolean isLoggingEnabled;
 
+    public static StringBuilder outputData = new StringBuilder();
+
     static class Pair {
         String a;
         String b;
@@ -46,9 +49,23 @@ public class SequenceAlignmentMaven {
 
         @Override
         public String toString() {
-            if (a.length() > 100)  a = String.format("%s | %s", a.substring(0, 50), a.substring(a.length() - 50 + 1));
-            if (b.length() > 100)  b = String.format("%s | %s", b.substring(0, 50), b.substring(b.length() - 50 + 1));
-            return String.format("String #1: [%s]\nString #2: [%s]", a, b);
+            String[] aPart = (a.length() > 50)
+                    ? new String[]{a.substring(0, 50), a.substring(a.length() - 50)}
+                    : new String[]{a};
+
+            String[] bPart = (b.length() > 50)
+                    ? new String[]{b.substring(0, 50), b.substring(b.length() - 50)}
+                    : new String[]{b};
+
+            if (aPart.length == 2 && bPart.length == 2) {
+                String ans = String.format("%s %s\n%s %s", aPart[0], bPart[0], aPart[1], bPart[1]);
+                outputData.append(ans).append("\n");
+                return ans;
+            } else {
+                String ans = String.format("%s\n%s", aPart[0], bPart[0]);
+                outputData.append(ans).append("\n");
+                return ans;
+            }
         }
     }
 
@@ -82,8 +99,11 @@ public class SequenceAlignmentMaven {
         MapCytokynesToIndices();
         Execute(argsList);
         long memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        System.out.printf("Before Memory: [%d]\tAfter Memory: [%d]%n", memBefore, memAfter);
-        System.out.printf("Memory required for code execution: %d KB%n", (memAfter - memBefore) / 1024);
+        // System.out.printf("Before Memory: [%d]\tAfter Memory: [%d]%n", memBefore, memAfter);
+        // System.out.printf("Memory required for code execution: %d KB%n", (memAfter - memBefore) / 1024);
+        System.out.printf("%d%n", memAfter - memBefore);
+        outputData.append(memAfter - memBefore).append("\n");
+        writeOutputToFile("output.txt");
     }
 
     public static void Execute(List<String> argsList) {
@@ -115,7 +135,9 @@ public class SequenceAlignmentMaven {
             end = Instant.now();
         }
         System.out.println(alignment);
-        System.out.printf("Time take for code execution: %d ns%n", Duration.between(start, end).toNanos());
+        //System.out.printf("Time take for code execution: %d ns%n", Duration.between(start, end).toNanos());
+        System.out.printf("%d%n", Duration.between(start, end).toNanos());
+        outputData.append(Duration.between(start, end).toNanos()).append("\n");
     }
 
     public static void SetFlags(List<String> argsList) {
@@ -203,6 +225,15 @@ public class SequenceAlignmentMaven {
             e.printStackTrace();
         }
         return data;
+    }
+
+    private static void writeOutputToFile(String filename) {
+        try {
+            Path path = Paths.get(BASE_PATH, filename);
+            Files.write(path, outputData.toString().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void MapCytokynesToIndices() {

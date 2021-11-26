@@ -46,8 +46,8 @@ public class SequenceAlignmentMaven {
 
         @Override
         public String toString() {
-            if (a.length() > 100)  a = String.format("%s...%s", a.substring(0, 50), a.substring(a.length() - 50 + 1));
-            if (b.length() > 100)  b = String.format("%s...%s", b.substring(0, 50), b.substring(a.length() - 50 + 1));
+            if (a.length() > 100)  a = String.format("%s | %s", a.substring(0, 50), a.substring(a.length() - 50 + 1));
+            if (b.length() > 100)  b = String.format("%s | %s", b.substring(0, 50), b.substring(b.length() - 50 + 1));
             return String.format("String #1: [%s]\nString #2: [%s]", a, b);
         }
     }
@@ -74,13 +74,16 @@ public class SequenceAlignmentMaven {
     }
 
     public static void main(String[] args) {
+        long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         List<String> argsList = Arrays.asList(args);
         System.out.println(argsList);
-
         SetFlags(argsList);
         InitializeLogger();
         MapCytokynesToIndices();
         Execute(argsList);
+        long memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        System.out.printf("Before Memory: [%d]\tAfter Memory: [%d]%n", memBefore, memAfter);
+        System.out.printf("Memory required for code execution: %d KB%n", (memAfter - memBefore) / 1024);
     }
 
     public static void Execute(List<String> argsList) {
@@ -113,13 +116,6 @@ public class SequenceAlignmentMaven {
         }
         System.out.println(alignment);
         System.out.printf("Time take for code execution: %d ns%n", Duration.between(start, end).toNanos());
-    }
-
-    private static Pair swap(String a, String b) {
-        String temp = a;
-        a = b;
-        b = temp;
-        return new Pair(a, b);
     }
 
     public static void SetFlags(List<String> argsList) {

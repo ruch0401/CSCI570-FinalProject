@@ -1,0 +1,24 @@
+ACACACTGACTACTGACTGGTGACTACTGACTGGACTGACTACTGACTGG _____________________________________T____A_T_A___
+GACTGGTGACTACTGACTGGACTGACTACTGACTGGTGACTACTGACTGG _______________________T____A_T_A____C____G_C_G___
+0.221
+31220
+
+
+
+My output
+
+Executing Dynamic Programming (Needleman Wunsch) Algorithm
+Score: 1440
+String #1: [ACACACTGACTACTGACTGGTGACTACTGACTGGACTGACTACTGACTGGTGACTACTGACTGG]
+String #2: [___________________________T_A_T____T_A_TAC_G_C____G___AC_G_C__G]
+Time take for code execution: 33890000 ns
+Before Memory: [3572808]	After Memory: [4621384]
+Memory required for code execution: 1024 KB
+
+
+Executing Divide & Conquer + Dynamic Programming Algorithm
+String #1: [ACACACTGACTACTGACTGGTGACTACTGACTGGAC_TGACTACTGACTGGTGACTACTGACTGG]
+String #2: [___________________________T_A_T___TAT____AC_G_C__G_A_C____G_C__G]
+Time take for code execution: 6349000 ns
+Before Memory: [3572808]	After Memory: [4621384]
+Memory required for code execution: 1024 KB

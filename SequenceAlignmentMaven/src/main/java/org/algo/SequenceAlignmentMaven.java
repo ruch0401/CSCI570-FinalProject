@@ -32,6 +32,7 @@ public class SequenceAlignmentMaven {
     public static boolean isDivideAndConquerEnabled;
     public static boolean isLoggingEnabled;
 
+    public static int NWScore = 0;
     public static StringBuilder outputData = new StringBuilder();
 
     static class Pair {
@@ -58,7 +59,7 @@ public class SequenceAlignmentMaven {
                     : new String[]{b};
 
             if (aPart.length == 2 && bPart.length == 2) {
-                String ans = String.format("%s %s\n%s %s", aPart[0], bPart[0], aPart[1], bPart[1]);
+                String ans = String.format("%s %s\n%s %s", aPart[0], aPart[1], bPart[0], bPart[1]);
                 outputData.append(ans).append("\n");
                 return ans;
             } else {
@@ -101,8 +102,9 @@ public class SequenceAlignmentMaven {
         long memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         // System.out.printf("Before Memory: [%d]\tAfter Memory: [%d]%n", memBefore, memAfter);
         // System.out.printf("Memory required for code execution: %d KB%n", (memAfter - memBefore) / 1024);
-        System.out.printf("%d%n", memAfter - memBefore);
-        outputData.append(memAfter - memBefore).append("\n");
+        double memoryRequired = (memAfter - memBefore) / 1_000.0;
+        System.out.printf("%f%n", memoryRequired);
+        outputData.append(memoryRequired).append("\n");
         writeOutputToFile("output.txt");
     }
 
@@ -135,9 +137,10 @@ public class SequenceAlignmentMaven {
             end = Instant.now();
         }
         System.out.println(alignment);
-        //System.out.printf("Time take for code execution: %d ns%n", Duration.between(start, end).toNanos());
-        System.out.printf("%d%n", Duration.between(start, end).toNanos());
-        outputData.append(Duration.between(start, end).toNanos()).append("\n");
+        double timeTaken = Duration.between(start, end).toNanosPart() / 1_000_000_000.0;
+        System.out.printf("%d%n", NWScore);
+        System.out.printf("%f%n", timeTaken);
+        outputData.append(NWScore).append("\n").append(timeTaken).append("\n");
     }
 
     public static void SetFlags(List<String> argsList) {
@@ -175,7 +178,7 @@ public class SequenceAlignmentMaven {
         }
     }
 
-    private static Pair GenerateInputStringsFromFiles(String filename) {
+    public static Pair GenerateInputStringsFromFiles(String filename) {
         List<String> data = fetchDataFromFile(filename);
         Input input = fetchInputComponents(data);
         String a = fetchInputStrings(input.firstString, input.indexes1);
@@ -370,6 +373,7 @@ public class SequenceAlignmentMaven {
                 }
             }
         }
+        NWScore = dp[m][n];
         if (isPrinting2DMatrixEnabled) {
             LOGGER.log(Level.INFO, "Printing DP Matrix enabled. Printing...");
             print2DMatrix(dp);

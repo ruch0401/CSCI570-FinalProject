@@ -32,8 +32,8 @@ public class SequenceAlignmentMaven {
     public static boolean isPrinting2DMatrixEnabled;
     public static boolean isDivideAndConquerEnabled;
     public static boolean isLoggingEnabled;
+    public static boolean isWriteOutputToFile;
 
-    public static int NWScore = 0;
     public static StringBuilder outputData = new StringBuilder();
 
     static class Pair {
@@ -101,12 +101,13 @@ public class SequenceAlignmentMaven {
         MapCytokynesToIndices();
         Execute(argsList);
         long memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        // System.out.printf("Before Memory: [%d]\tAfter Memory: [%d]%n", memBefore, memAfter);
-        // System.out.printf("Memory required for code execution: %d KB%n", (memAfter - memBefore) / 1024);
         double memoryRequired = (memAfter - memBefore) / 1_000.0;
         System.out.printf("%f%n", memoryRequired);
         outputData.append(memoryRequired).append("\n");
-        writeOutputToFile("output.txt");
+
+        if (isWriteOutputToFile) {
+            writeOutputToFile("output.txt");
+        }
     }
 
     public static void Execute(List<String> argsList) {
@@ -139,6 +140,7 @@ public class SequenceAlignmentMaven {
         }
         System.out.println(alignment);
         double timeTaken = Duration.between(start, end).toNanosPart() / 1_000_000_000.0;
+        int NWScore = calculateScore(alignment);
         System.out.printf("%d%n", NWScore);
         System.out.printf("%f%n", timeTaken);
         outputData.append(NWScore).append("\n").append(timeTaken).append("\n");
@@ -163,6 +165,9 @@ public class SequenceAlignmentMaven {
 
         isLoggingEnabled = argsList.get(argsList.indexOf("-isLoggingEnabled") + 1).equalsIgnoreCase("true");
         LOGGER.log(Level.INFO, "isLoggingEnabled is " + isLoggingEnabled);
+
+        isWriteOutputToFile = argsList.get(argsList.indexOf("-isWriteOutputToFile") + 1).equalsIgnoreCase("true");
+        LOGGER.log(Level.INFO, "isWriteOutputToFile is " + isWriteOutputToFile);
 
         logLimitationsAndExit();
     }
@@ -273,11 +278,11 @@ public class SequenceAlignmentMaven {
             ans = NeedlemanWunsch(a, b);
         } else {
             int alen = a.length();
-            int amid = a.length() / 2;
+            int amid = alen / 2;
             int blen = b.length();
 
             List<Integer> scoreL = NWScore(a.substring(0, amid), b);
-            String aRev = new StringBuilder(a.substring(amid + 1, alen)).reverse().toString();
+            String aRev = new StringBuilder(a.substring(amid, alen)).reverse().toString();
             String bRev = new StringBuilder(b).reverse().toString();
             List<Integer> scoreR = NWScore(aRev, bRev);
             Collections.reverse(scoreR);
@@ -355,11 +360,11 @@ public class SequenceAlignmentMaven {
     private static int getMismatchCost(char c1, char c2) {
         int i = hm.get(c1);
         int j = hm.get(c2);
-        // System.out.println(String.format("Checking mismatch for[%s, %s]. Mismatch value found: %d", c1, c2, MISMATCH_COST[i][j]));
         return MISMATCH_COST[i][j];
     }
 
     public static Pair NeedlemanWunsch(String a, String b) {
+        LOGGER.log(Level.INFO, String.format("Executing Needleman Wunsch for %s and %s", a, b));
         int m = a.length();
         int n = b.length();
         int[][] dp = new int[m + 1][n + 1];
@@ -379,7 +384,6 @@ public class SequenceAlignmentMaven {
                 }
             }
         }
-        NWScore = dp[m][n];
         if (isPrinting2DMatrixEnabled) {
             LOGGER.log(Level.INFO, "Printing DP Matrix enabled. Printing...");
             print2DMatrix(dp);
@@ -458,10 +462,13 @@ public class SequenceAlignmentMaven {
             char c2 = b.charAt(i);
             if (c1 == '_' || c2 == '_') {
                 score += GAP_PENALTY;
+                LOGGER.log(Level.INFO, String.format("Comparing [%s, %s] | Score: %d", c1, c2, GAP_PENALTY));
             } else {
                 score += getMismatchCost(a.charAt(i), b.charAt(i));
+                LOGGER.log(Level.INFO, String.format("Comparing [%s, %s] | Score: %d", c1, c2, getMismatchCost(a.charAt(i), b.charAt(i))));
             }
         }
+        LOGGER.log(Level.INFO, String.format("Score is %d", score));
         return score;
     }
 }

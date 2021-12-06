@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class SequenceAlignmentMaven {
     public static final int[][] MISMATCH_COST =
@@ -205,15 +206,20 @@ public class SequenceAlignmentMaven {
     }
 
     private static Input fetchInputComponents(List<String> data) {
-        int blankStringIndex = data.indexOf("");
+        int indexToSplit = 0;
+        for (String d: data) {
+            if (Pattern.matches("([ACGT])\\w+", d) && data.indexOf(d) != 0) {
+                indexToSplit = data.indexOf(d);
+            }
+        }
         String firstBaseString = data.get(0);
-        String secondBaseString = data.get(blankStringIndex + 1);
+        String secondBaseString = data.get(indexToSplit);
         List<Integer> indexes1 = new ArrayList<>();
         List<Integer> indexes2 = new ArrayList<>();
-        for (int i = 1; i < blankStringIndex; i++) {
+        for (int i = 1; i < indexToSplit; i++) {
             indexes1.add(Integer.parseInt(data.get(i)));
         }
-        for (int i = blankStringIndex + 2; i < data.size(); i++) {
+        for (int i = indexToSplit + 1; i < data.size(); i++) {
             indexes2.add(Integer.parseInt(data.get(i)));
         }
         return new Input(firstBaseString, secondBaseString, indexes1, indexes2);

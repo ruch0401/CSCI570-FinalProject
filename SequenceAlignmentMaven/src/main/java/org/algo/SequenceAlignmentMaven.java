@@ -1,6 +1,8 @@
 package org.algo;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -163,7 +165,7 @@ public class SequenceAlignmentMaven {
         isDivideAndConquerEnabled = argsList.get(argsList.indexOf("-isDivideAndConquerEnabled") + 1).equalsIgnoreCase("true");
         LOGGER.log(Level.INFO, "isDivideAndConquerEnabled is " + isDivideAndConquerEnabled);
 
-        isLoggingEnabled = argsList.get(argsList.indexOf("-isLoggingEnabled") + 1).equalsIgnoreCase("true");
+        isLoggingEnabled = argsList.get(argsList.indexOf("-isLoggingEnabled") + 1).equalsIgnoreCase("false");
         LOGGER.log(Level.INFO, "isLoggingEnabled is " + isLoggingEnabled);
 
         isWriteOutputToFile = argsList.get(argsList.indexOf("-isWriteOutputToFile") + 1).equalsIgnoreCase("true");
@@ -192,7 +194,7 @@ public class SequenceAlignmentMaven {
         return new Pair(a, b);
     }
 
-    private static String fetchInputStrings(String base, List<Integer> indexes) {
+    public static String fetchInputStrings(String base, List<Integer> indexes) {
         int lengthSupposedToBe = (int) (Math.pow(2, indexes.size())) * base.length();
         StringBuilder sb = null;
         for (int index : indexes) {
@@ -231,12 +233,17 @@ public class SequenceAlignmentMaven {
     }
 
     private static List<String> fetchDataFromFile(String filename) {
-        Path path = Paths.get(BASE_PATH, filename);
         List<String> data = null;
         try {
-            data = Files.readAllLines(path);
-        } catch (IOException e) {
-            e.printStackTrace();
+            URL url = ClassLoader.getSystemResource(filename);
+            Path path = Path.of(url.toURI());
+            try {
+                data = Files.readAllLines(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (URISyntaxException uriSyntaxException) {
+            LOGGER.log(Level.SEVERE, String.format("Error while URI parsing %s", uriSyntaxException.getMessage()));
         }
         return data;
     }
@@ -445,12 +452,6 @@ public class SequenceAlignmentMaven {
             }
             System.out.println();
         }
-    }
-
-    public static boolean isNWScoreEqual(Pair pair1, Pair pair2) {
-        int score1 = calculateScore(pair1);
-        int score2 = calculateScore(pair2);
-        return score1 == score2;
     }
 
     public static int calculateScore(Pair pair) {

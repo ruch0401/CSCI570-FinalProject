@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -42,14 +43,15 @@ public class SequenceAlignmentMaven {
     // static variables to measure and store time and space requirement for code execution
     public static Instant start = Instant.now();
     public static Instant end;
-    public static long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+    public static long memBefore;
     public static long memAfter;
     public static double totalTimeTaken;
     public static double totalMemoryRequired;
 
     // static list to store time and memory datapoints for different input sizes
-    public static List<Double> timeValues = new ArrayList<>();
-    public static List<Double> memoryValues = new ArrayList<>();
+    public static List<Integer> inputSize = new ArrayList<>();
+    public static List<String> timeValues = new ArrayList<>();
+    public static List<String> memoryValues = new ArrayList<>();
 
     // static variable to store final output data which is written to the file - output.txt
     public static StringBuilder outputData = new StringBuilder();
@@ -116,8 +118,31 @@ public class SequenceAlignmentMaven {
         setFlags(argsList);
         initializeLogger();
         mapCytokynesToIndices();
-        Pair alignment = execute(argsList);
-        logMetricsAndPrepareOutput(alignment);
+        execute(argsList);
+
+        System.out.println("Input Sizes (length(a) + length(b)): \n" + inputSize);
+        System.out.println("Time Values: \n" + timeValues);
+        System.out.println("Memory Values: \n" + memoryValues);
+    }
+
+    public static void execute(List<String> argsList) {
+        List<Pair> inputStringPairs = getInputStrings(argsList);
+        for (Pair inputString: inputStringPairs) {
+            inputSize.add(inputString.a.length() + inputString.b.length());
+            if (isSpaceOptimizationEnabled && isDivideAndConquerEnabled) {
+                System.out.println("Executing Divide & Conquer + Dynamic Programming Algorithm");
+                memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+                start = Instant.now();
+                Pair alignment = DivideAndConquerSequenceAlignment(inputString.a, inputString.b);
+                logMetricsAndPrepareOutput(alignment);
+            } else {
+                System.out.println("Executing Dynamic Programming (Needleman Wunsch) Algorithm");
+                memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+                start = Instant.now();
+                Pair alignment = NeedlemanWunsch(inputString.a, inputString.b);
+                logMetricsAndPrepareOutput(alignment);
+            }
+        }
     }
 
     public static void logMetricsAndPrepareOutput(Pair alignment) {
@@ -126,32 +151,40 @@ public class SequenceAlignmentMaven {
         prepareOutput(alignment);
     }
 
-    public static Pair execute(List<String> argsList) {
-        Pair inputStrings = getInputStrings(argsList);
-        Pair alignment;
-        if (isSpaceOptimizationEnabled && isDivideAndConquerEnabled) {
-            System.out.println("Executing Divide & Conquer + Dynamic Programming Algorithm");
-            start = Instant.now();
-            return DivideAndConquerSequenceAlignment(inputStrings.a, inputStrings.b);
-        } else {
-            System.out.println("Executing Dynamic Programming (Needleman Wunsch) Algorithm");
-            start = Instant.now();
-            return NeedlemanWunsch(inputStrings.a, inputStrings.b);
-        }
-    }
-
-    private static Pair getInputStrings(List<String> argsList) {
+    private static List<Pair> getInputStrings(List<String> argsList) {
+        List<Pair> pairs = new ArrayList<>();
         if (isCustomEnabled) {
             LOGGER.log(Level.INFO, "Custom strings provided, skipping input creation from file");
-            String a = argsList.get(argsList.indexOf("-firstString") + 1);
-            String b = argsList.get(argsList.indexOf("-secondString") + 1);
-            return new Pair(a, b);
+            for (int i = 0; i < 20; i++) {
+                Pair pair = generateRandomStrings();
+                pairs.add(pair);
+            }
         } else {
             BASE_PATH = argsList.get(argsList.indexOf("-basePath") + 1);
             final String FILENAME = argsList.get(argsList.indexOf("-filename") + 1);
             LOGGER.log(Level.INFO, String.format("Generating input strings from file [%s] present at location [%s]", FILENAME, BASE_PATH));
-            return GenerateInputStringsFromFiles(FILENAME);
+            pairs.add(generateInputStringsFromFiles(FILENAME));
         }
+        return pairs;
+    }
+
+    public static SequenceAlignmentMaven.Pair generateRandomStrings() {
+        String base1 = "ACTG";
+        String base2 = "TACG";
+        String a = fetchInputStrings(base1, getRandomIndexArray());
+        String b = fetchInputStrings(base2, getRandomIndexArray());
+        return new SequenceAlignmentMaven.Pair(a, b);
+    }
+
+    private static List<Integer> getRandomIndexArray() {
+        Random random = new Random();
+        int count = random.nextInt(10) + 1;
+
+        List<Integer> randomIndexList = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            randomIndexList.add(random.nextInt(3) + 1);
+        }
+        return randomIndexList;
     }
 
     private static void prepareOutput(Pair alignment) {
@@ -167,6 +200,7 @@ public class SequenceAlignmentMaven {
         if (isWriteOutputToFile) {
             writeOutputToFile("output.txt");
         }
+        System.out.println();
     }
 
     public static void setFlags(List<String> argsList) {
@@ -205,9 +239,14 @@ public class SequenceAlignmentMaven {
             LOGGER.log(Level.SEVERE, "2D DP Matrix cannot be printed if Space Optimization is enabled. Please set -isPrinting2DMatrixEnabled = false");
             System.exit(1);
         }
+
+        if (isCustomEnabled && isWriteOutputToFile) {
+            LOGGER.log(Level.SEVERE, "Custom input executions cannot be written to the file. Please set -isWriteOutputToFile = false");
+            System.exit(1);
+        }
     }
 
-    public static Pair GenerateInputStringsFromFiles(String filename) {
+    public static Pair generateInputStringsFromFiles(String filename) {
         List<String> data = fetchDataFromFile(filename);
         Input input = fetchInputComponents(data);
         String a = fetchInputStrings(input.firstString, input.indexes1);
@@ -325,13 +364,18 @@ public class SequenceAlignmentMaven {
 
     private static void calculateAndSaveTimeRequired() {
         totalTimeTaken = Duration.between(start, end).toNanosPart() / 1_000_000_000.0;
-        timeValues.add(totalTimeTaken);
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumIntegerDigits(2);
+        df.setMaximumFractionDigits(5);
+        timeValues.add(df.format(totalTimeTaken));
         System.out.printf("%f%n", totalTimeTaken);
     }
 
     private static void calculateAndSaveMemoryRequired() {
         totalMemoryRequired = (memAfter - memBefore) / 1_000.0;
-        memoryValues.add(totalMemoryRequired);
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMaximumFractionDigits(3);
+        memoryValues.add(df.format(totalMemoryRequired));
         System.out.printf("%f%n", totalMemoryRequired);
     }
 

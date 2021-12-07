@@ -84,7 +84,7 @@ public class SequenceAlignmentMaven {
                 outputData.append(ans).append("\n");
                 return ans;
             } else {
-                String ans = String.format("%s\n%s", aPart[0], bPart[0]);
+                String ans = String.format("%s %s\n%s %s", aPart[0], aPart[0], bPart[0], bPart[0]);
                 outputData.append(ans).append("\n");
                 return ans;
             }
@@ -115,6 +115,7 @@ public class SequenceAlignmentMaven {
     public static void main(String[] args) {
         List<String> argsList = Arrays.asList(args);
         System.out.println(argsList);
+
         setFlags(argsList);
         initializeLogger();
         mapCytokynesToIndices();

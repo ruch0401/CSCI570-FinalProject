@@ -1,24 +1,54 @@
 package org.algo;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class SequenceAlignmentMavenTests {
 
-    public SequenceAlignmentMaven.Pair generateRandomStrings() {
+    @BeforeAll
+    static void setUp() {
+        String[] arr = {"-ea",
+                "-basePath",
+                "/Users/ruch0401/Desktop/USC/CSCI-570 AOA/CSCI570-FinalProject/SequenceAlignmentMaven/src/main/resources",
+                "-filename",
+                "input.txt",
+                "-firstString",
+                "AGTACGCA",
+                "-secondString",
+                "TATGC",
+                "-isCustomEnabled",
+                "false",
+                "-isSpaceOptimizationEnabled",
+                "true",
+                "-isPrinting2DMatrixEnabled",
+                "false",
+                "-isDivideAndConquerEnabled",
+                "true",
+                "-isLoggingEnabled",
+                "false",
+                "-isWriteOutputToFile",
+                "false"};
+        List<String> argsList = Arrays.stream(arr).toList();
+        SequenceAlignmentMaven.initializeLogger();
+        SequenceAlignmentMaven.mapCytokynesToIndices();
+        SequenceAlignmentMaven.setFlags(argsList);
+    }
+
+    public static SequenceAlignmentMaven.Pair generateRandomStrings() {
         String base1 = "ACTG";
         String base2 = "TACG";
         String a = SequenceAlignmentMaven.fetchInputStrings(base1, getRandomIndexArray());
         String b = SequenceAlignmentMaven.fetchInputStrings(base2, getRandomIndexArray());
-        System.out.println(a + "\t" + b);
         return new SequenceAlignmentMaven.Pair(a, b);
     }
 
-    private List<Integer> getRandomIndexArray() {
+    private static List<Integer> getRandomIndexArray() {
         Random random = new Random();
         int count = random.nextInt(10) + 1;
 
@@ -26,20 +56,7 @@ public class SequenceAlignmentMavenTests {
         for (int i = 0; i < count; i++) {
             randomIndexList.add(random.nextInt(3) + 1);
         }
-        System.out.println(randomIndexList + "\t" + count);
         return randomIndexList;
-    }
-
-    @Test
-    void sampleTest0() {
-        SequenceAlignmentMaven.Pair pair = generateRandomStrings();
-        String a = pair.a;
-        String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
-        SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
-        SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
-        Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
     @Test
@@ -47,10 +64,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -59,10 +74,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -71,10 +84,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -83,10 +94,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -95,10 +104,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -107,10 +114,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -119,10 +124,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -131,10 +134,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -143,10 +144,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -155,10 +154,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -167,10 +164,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -179,10 +174,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -191,10 +184,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -203,10 +194,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -215,10 +204,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -227,10 +214,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -239,10 +224,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -251,10 +234,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -263,10 +244,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 
@@ -275,10 +254,8 @@ public class SequenceAlignmentMavenTests {
         SequenceAlignmentMaven.Pair pair = generateRandomStrings();
         String a = pair.a;
         String b = pair.b;
-        SequenceAlignmentMaven.MapCytokynesToIndices();
         SequenceAlignmentMaven.Pair p1 = SequenceAlignmentMaven.DivideAndConquerSequenceAlignment(a, b);
         SequenceAlignmentMaven.Pair p2 = SequenceAlignmentMaven.NeedlemanWunsch(a, b);
-        System.out.println(p1 + "\n" + p2);
         Assertions.assertEquals(SequenceAlignmentMaven.calculateScore(p1), SequenceAlignmentMaven.calculateScore(p2));
     }
 }

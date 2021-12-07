@@ -3,7 +3,6 @@ package org.algo;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,6 +14,19 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class SequenceAlignmentMaven {
+
+    // static variables for making code customizable
+    public static boolean isCustomEnabled;
+    public static boolean isSpaceOptimizationEnabled;
+    public static boolean isPrinting2DMatrixEnabled;
+    public static boolean isDivideAndConquerEnabled;
+    public static boolean isLoggingEnabled;
+    public static boolean isWriteOutputToFile;
+
+    // LOGGER
+    private final static Logger LOGGER = Logger.getLogger(SequenceAlignmentMaven.class.getName());
+
+    // static variables for code execution
     public static final int[][] MISMATCH_COST =
             {
                     {0, 110, 48, 94},
@@ -23,19 +35,23 @@ public class SequenceAlignmentMaven {
                     {94, 48, 110, 0}
             };
     public static final int GAP_PENALTY = 30;
-
     public static Map<Character, Integer> hm = new HashMap<>();
-
     public static String BASE_PATH;
-    private final static Logger LOGGER = Logger.getLogger(SequenceAlignmentMaven.class.getName());
+    public static double NWScore;
 
-    public static boolean isCustomEnabled;
-    public static boolean isSpaceOptimizationEnabled;
-    public static boolean isPrinting2DMatrixEnabled;
-    public static boolean isDivideAndConquerEnabled;
-    public static boolean isLoggingEnabled;
-    public static boolean isWriteOutputToFile;
+    // static variables to measure and store time and space requirement for code execution
+    public static Instant start = Instant.now();
+    public static Instant end;
+    public static long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+    public static long memAfter;
+    public static double totalTimeTaken;
+    public static double totalMemoryRequired;
 
+    // static list to store time and memory datapoints for different input sizes
+    public static List<Double> timeValues = new ArrayList<>();
+    public static List<Double> memoryValues = new ArrayList<>();
+
+    // static variable to store final output data which is written to the file - output.txt
     public static StringBuilder outputData = new StringBuilder();
 
     static class Pair {
@@ -87,7 +103,7 @@ public class SequenceAlignmentMaven {
         }
     }
 
-    public static void InitializeLogger() {
+    public static void initializeLogger() {
         if (isLoggingEnabled)
             LOGGER.setLevel(Level.INFO);
         else
@@ -95,60 +111,65 @@ public class SequenceAlignmentMaven {
     }
 
     public static void main(String[] args) {
-        long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         List<String> argsList = Arrays.asList(args);
         System.out.println(argsList);
-        SetFlags(argsList);
-        InitializeLogger();
-        MapCytokynesToIndices();
-        Execute(argsList);
-        long memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        double memoryRequired = (memAfter - memBefore) / 1_000.0;
-        System.out.printf("%f%n", memoryRequired);
-        outputData.append(memoryRequired).append("\n");
+        setFlags(argsList);
+        initializeLogger();
+        mapCytokynesToIndices();
+        Pair alignment = execute(argsList);
+        logMetricsAndPrepareOutput(alignment);
+    }
 
+    public static void logMetricsAndPrepareOutput(Pair alignment) {
+        end = Instant.now();
+        memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        prepareOutput(alignment);
+    }
+
+    public static Pair execute(List<String> argsList) {
+        Pair inputStrings = getInputStrings(argsList);
+        Pair alignment;
+        if (isSpaceOptimizationEnabled && isDivideAndConquerEnabled) {
+            System.out.println("Executing Divide & Conquer + Dynamic Programming Algorithm");
+            start = Instant.now();
+            return DivideAndConquerSequenceAlignment(inputStrings.a, inputStrings.b);
+        } else {
+            System.out.println("Executing Dynamic Programming (Needleman Wunsch) Algorithm");
+            start = Instant.now();
+            return NeedlemanWunsch(inputStrings.a, inputStrings.b);
+        }
+    }
+
+    private static Pair getInputStrings(List<String> argsList) {
+        if (isCustomEnabled) {
+            LOGGER.log(Level.INFO, "Custom strings provided, skipping input creation from file");
+            String a = argsList.get(argsList.indexOf("-firstString") + 1);
+            String b = argsList.get(argsList.indexOf("-secondString") + 1);
+            return new Pair(a, b);
+        } else {
+            BASE_PATH = argsList.get(argsList.indexOf("-basePath") + 1);
+            final String FILENAME = argsList.get(argsList.indexOf("-filename") + 1);
+            LOGGER.log(Level.INFO, String.format("Generating input strings from file [%s] present at location [%s]", FILENAME, BASE_PATH));
+            return GenerateInputStringsFromFiles(FILENAME);
+        }
+    }
+
+    private static void prepareOutput(Pair alignment) {
+        System.out.println(alignment);
+        NWScore = calculateScore(alignment);
+        System.out.printf("%f%n", NWScore);
+        calculateAndSaveTimeRequired();
+        calculateAndSaveMemoryRequired();
+        outputData
+                .append(NWScore).append("\n")
+                .append(totalTimeTaken).append("\n")
+                .append(totalMemoryRequired);
         if (isWriteOutputToFile) {
             writeOutputToFile("output.txt");
         }
     }
 
-    public static void Execute(List<String> argsList) {
-        Pair inputStrings;
-        if (isCustomEnabled) {
-            LOGGER.log(Level.INFO, "Custom strings provided, skipping input creation from file");
-            String a = argsList.get(argsList.indexOf("-firstString") + 1);
-            String b = argsList.get(argsList.indexOf("-secondString") + 1);
-            inputStrings = new Pair(a, b);
-        } else {
-            BASE_PATH = argsList.get(argsList.indexOf("-basePath") + 1);
-            final String FILENAME = argsList.get(argsList.indexOf("-filename") + 1);
-            LOGGER.log(Level.INFO, String.format("Generating input strings from file [%s] present at location [%s]", FILENAME, BASE_PATH));
-            inputStrings = GenerateInputStringsFromFiles(FILENAME);
-        }
-
-        Pair alignment;
-        Instant start;
-        Instant end;
-        if (isSpaceOptimizationEnabled && isDivideAndConquerEnabled) {
-            System.out.println("Executing Divide & Conquer + Dynamic Programming Algorithm");
-            start = Instant.now();
-            alignment = DivideAndConquerSequenceAlignment(inputStrings.a, inputStrings.b);
-            end = Instant.now();
-        } else {
-            System.out.println("Executing Dynamic Programming (Needleman Wunsch) Algorithm");
-            start = Instant.now();
-            alignment = NeedlemanWunsch(inputStrings.a, inputStrings.b);
-            end = Instant.now();
-        }
-        System.out.println(alignment);
-        double timeTaken = Duration.between(start, end).toNanosPart() / 1_000_000_000.0;
-        int NWScore = calculateScore(alignment);
-        System.out.printf("%d%n", NWScore);
-        System.out.printf("%f%n", timeTaken);
-        outputData.append(NWScore).append("\n").append(timeTaken).append("\n");
-    }
-
-    public static void SetFlags(List<String> argsList) {
+    public static void setFlags(List<String> argsList) {
         if (argsList.size() == 0) {
             LOGGER.log(Level.SEVERE, "No arguments passed. Terminating code...");
             System.exit(1);
@@ -165,7 +186,7 @@ public class SequenceAlignmentMaven {
         isDivideAndConquerEnabled = argsList.get(argsList.indexOf("-isDivideAndConquerEnabled") + 1).equalsIgnoreCase("true");
         LOGGER.log(Level.INFO, "isDivideAndConquerEnabled is " + isDivideAndConquerEnabled);
 
-        isLoggingEnabled = argsList.get(argsList.indexOf("-isLoggingEnabled") + 1).equalsIgnoreCase("false");
+        isLoggingEnabled = argsList.get(argsList.indexOf("-isLoggingEnabled") + 1).equalsIgnoreCase("true");
         LOGGER.log(Level.INFO, "isLoggingEnabled is " + isLoggingEnabled);
 
         isWriteOutputToFile = argsList.get(argsList.indexOf("-isWriteOutputToFile") + 1).equalsIgnoreCase("true");
@@ -214,7 +235,7 @@ public class SequenceAlignmentMaven {
 
     private static Input fetchInputComponents(List<String> data) {
         int indexToSplit = 0;
-        for (String d: data) {
+        for (String d : data) {
             if (Pattern.matches("([ACGT])\\w+", d) && data.indexOf(d) != 0) {
                 indexToSplit = data.indexOf(d);
             }
@@ -251,13 +272,13 @@ public class SequenceAlignmentMaven {
     private static void writeOutputToFile(String filename) {
         try {
             Path path = Paths.get(BASE_PATH, filename);
-            Files.write(path, outputData.toString().getBytes(StandardCharsets.UTF_8));
+            Files.writeString(path, outputData.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void MapCytokynesToIndices() {
+    public static void mapCytokynesToIndices() {
         hm.put('A', 0);
         hm.put('C', 1);
         hm.put('G', 2);
@@ -300,6 +321,18 @@ public class SequenceAlignmentMaven {
             ans = p1.add(p2);
         }
         return ans;
+    }
+
+    private static void calculateAndSaveTimeRequired() {
+        totalTimeTaken = Duration.between(start, end).toNanosPart() / 1_000_000_000.0;
+        timeValues.add(totalTimeTaken);
+        System.out.printf("%f%n", totalTimeTaken);
+    }
+
+    private static void calculateAndSaveMemoryRequired() {
+        totalMemoryRequired = (memAfter - memBefore) / 1_000.0;
+        memoryValues.add(totalMemoryRequired);
+        System.out.printf("%f%n", totalMemoryRequired);
     }
 
     private static int getMin(List<Integer> a, List<Integer> b) {

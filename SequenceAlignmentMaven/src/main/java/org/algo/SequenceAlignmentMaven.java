@@ -129,16 +129,15 @@ public class SequenceAlignmentMaven {
     public static void execute(List<String> argsList) {
         List<Pair> inputStringPairs = getInputStrings(argsList);
         for (Pair inputString: inputStringPairs) {
+            memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
             inputSize.add(inputString.a.length() + inputString.b.length());
             if (isSpaceOptimizationEnabled && isDivideAndConquerEnabled) {
                 System.out.println("Executing Divide & Conquer + Dynamic Programming Algorithm");
-                memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
                 start = Instant.now();
                 Pair alignment = DivideAndConquerSequenceAlignment(inputString.a, inputString.b);
                 logMetricsAndPrepareOutput(alignment);
             } else {
                 System.out.println("Executing Dynamic Programming (Needleman Wunsch) Algorithm");
-                memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
                 start = Instant.now();
                 Pair alignment = NeedlemanWunsch(inputString.a, inputString.b);
                 logMetricsAndPrepareOutput(alignment);

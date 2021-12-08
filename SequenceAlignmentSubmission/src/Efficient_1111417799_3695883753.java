@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class Efficient_1111417799_3695883753 {
 
     // static variables for making code customizable
-    public static boolean isCustomEnabled = true;
+    public static boolean isCustomEnabled = false;
     public static boolean isPrinting2DMatrixEnabled = false;
     public static boolean isLoggingEnabled = false;
     public static boolean isWriteOutputToFile = true;

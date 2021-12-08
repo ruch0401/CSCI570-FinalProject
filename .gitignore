@@ -29,3 +29,4 @@ SequenceAlignment/SequenceAlignment.iml
 .idea
 *.iml
 target/
+.class

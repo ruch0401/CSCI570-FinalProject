@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-public class Efficient {
+public class Efficient_1111417799_3695883753 {
 
     // static variables for making code customizable
     public static boolean isCustomEnabled = true;
@@ -19,7 +19,7 @@ public class Efficient {
     public static boolean isWriteOutputToFile = true;
 
     // LOGGER
-    private final static Logger LOGGER = Logger.getLogger(Efficient.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(Efficient_1111417799_3695883753.class.getName());
 
     // static variables for code execution
     public static final int[][] MISMATCH_COST =
@@ -31,7 +31,7 @@ public class Efficient {
             };
     public static final int GAP_PENALTY = 30;
     public static Map<Character, Integer> hm = new HashMap<>();
-    public static String FILENAME = "input.txt";
+    public static String FILENAME;
     public static double NWScore;
 
     // static variables to measure and store time and space requirement for code execution
@@ -53,6 +53,7 @@ public class Efficient {
 
     public static void main(String[] args) {
         List<String> argsList = Arrays.asList(args);
+        FILENAME = argsList.get(0);
 
         initializeLogger();
         mapCytokynesToIndices();

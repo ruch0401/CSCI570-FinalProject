@@ -41,7 +41,7 @@ public class SequenceAlignmentMaven {
     public static double NWScore;
 
     // static variables to measure and store time and space requirement for code execution
-    public static Instant start = Instant.now();
+    public static Instant start;
     public static Instant end;
     public static long memBefore;
     public static long memAfter;
@@ -172,19 +172,34 @@ public class SequenceAlignmentMaven {
     public static SequenceAlignmentMaven.Pair generateRandomStrings() {
         String base1 = "ACTG";
         String base2 = "TACG";
-        String a = fetchInputStrings(base1, getRandomIndexArray());
-        String b = fetchInputStrings(base2, getRandomIndexArray());
-        return new SequenceAlignmentMaven.Pair(a, b);
+        String a = fetchInputStrings(shuffleString(base1), getRandomIndexArray());
+        String b = fetchInputStrings(shuffleString(base2), getRandomIndexArray());
+        System.out.println("Random Strings: " + a + ", " + b);
+        return new Pair(a, b);
     }
 
-    private static List<Integer> getRandomIndexArray() {
-        Random random = new Random();
-        int count = random.nextInt(10) + 1;
-
-        List<Integer> randomIndexList = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            randomIndexList.add(random.nextInt(3) + 1);
+    private static String shuffleString(String s) {
+        StringBuilder ans = new StringBuilder();
+        List<Character> charList = new ArrayList<>();
+        for (char c: s.toCharArray()) {
+            charList.add(c);
         }
+        Collections.shuffle(charList);
+        charList.forEach(ans::append);
+        return ans.toString();
+    }
+
+    public static List<Integer> getRandomIndexArray() {
+        Random random = new Random();
+        int count = random.nextInt(8) + 1;
+        int i = 1;
+        List<Integer> randomIndexList = new ArrayList<>();
+        while (randomIndexList.size() != count) {
+            int num = random.nextInt(i++ * 2) + 1;
+            if (!randomIndexList.contains(num))
+                randomIndexList.add(num);
+        }
+        System.out.println(randomIndexList);
         return randomIndexList;
     }
 

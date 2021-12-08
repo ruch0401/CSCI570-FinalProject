@@ -13,9 +13,9 @@ import java.util.regex.Pattern;
 public class Basic {
 
     // static variables for making code customizable
-    public static boolean isCustomEnabled = true;
+    public static boolean isCustomEnabled = false;
     public static boolean isPrinting2DMatrixEnabled = false;
-    public static boolean isLoggingEnabled = true;
+    public static boolean isLoggingEnabled = false;
     public static boolean isWriteOutputToFile = true;
 
     // LOGGER
@@ -57,6 +57,18 @@ public class Basic {
         initializeLogger();
         mapCytokynesToIndices();
         execute(argsList);
+
+        if (isCustomEnabled) {
+            outputData
+                    .append("\n")
+                    .append(inputSize).append("\n")
+                    .append(timeValues).append("\n")
+                    .append(memoryValues).append("\n").append("\n");
+        }
+
+        if (isWriteOutputToFile) {
+            writeOutputToFile();
+        }
     }
 
     public static void initializeLogger() {
@@ -109,13 +121,9 @@ public class Basic {
                     : new String[]{b};
 
             if (aPart.length == 2 && bPart.length == 2) {
-                String ans = String.format("%s %s\n%s %s", aPart[0], aPart[1], bPart[0], bPart[1]);
-                outputData.append(ans).append("\n");
-                return ans;
+                return String.format("%s %s\n%s %s", aPart[0], aPart[1], bPart[0], bPart[1]);
             } else {
-                String ans = String.format("%s %s\n%s %s", aPart[0], aPart[0], bPart[0], bPart[0]);
-                outputData.append(ans).append("\n");
-                return ans;
+                return String.format("%s %s\n%s %s", aPart[0], aPart[0], bPart[0], bPart[0]);
             }
         }
     }
@@ -241,7 +249,6 @@ public class Basic {
     }
 
     public static Pair NeedlemanWunsch(String a, String b) {
-        LOGGER.log(Level.INFO, String.format("Executing Needleman Wunsch for %s and %s", a, b));
         int m = a.length();
         int n = b.length();
         int[][] dp = new int[m + 1][n + 1];
@@ -339,13 +346,10 @@ public class Basic {
             char c2 = b.charAt(i);
             if (c1 == '_' || c2 == '_') {
                 score += GAP_PENALTY;
-                LOGGER.log(Level.INFO, String.format("Comparing [%s, %s] | Score: %d", c1, c2, GAP_PENALTY));
             } else {
                 score += getMismatchCost(a.charAt(i), b.charAt(i));
-                LOGGER.log(Level.INFO, String.format("Comparing [%s, %s] | Score: %d", c1, c2, getMismatchCost(a.charAt(i), b.charAt(i))));
             }
         }
-        LOGGER.log(Level.INFO, String.format("Score is %d", score));
         return score;
     }
 
@@ -356,18 +360,14 @@ public class Basic {
     }
 
     private static void prepareOutput(Pair alignment) {
-        LOGGER.log(Level.INFO, alignment.toString());
         NWScore = calculateScore(alignment);
-        LOGGER.log(Level.INFO, String.format("%f%n", NWScore));
         calculateAndSaveTimeRequired();
         calculateAndSaveMemoryRequired();
         outputData
+                .append(alignment).append("\n")
                 .append(NWScore).append("\n")
                 .append(totalTimeTaken).append("\n")
-                .append(totalMemoryRequired).append("\n");
-        if (isWriteOutputToFile) {
-            writeOutputToFile();
-        }
+                .append(totalMemoryRequired).append("\n").append("\n");
     }
 
     private static void calculateAndSaveTimeRequired() {
@@ -376,7 +376,6 @@ public class Basic {
         df.setMaximumIntegerDigits(2);
         df.setMaximumFractionDigits(5);
         timeValues.add(df.format(totalTimeTaken));
-        LOGGER.log(Level.INFO, String.format("%f%n", totalTimeTaken));
     }
 
     private static void calculateAndSaveMemoryRequired() {
@@ -384,7 +383,6 @@ public class Basic {
         DecimalFormat df = new DecimalFormat("#");
         df.setMaximumFractionDigits(3);
         memoryValues.add(df.format(totalMemoryRequired));
-        LOGGER.log(Level.INFO, String.format("%f%n", totalMemoryRequired));
     }
 
     private static void writeOutputToFile() {

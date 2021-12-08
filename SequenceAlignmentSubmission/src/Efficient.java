@@ -19,7 +19,7 @@ public class Efficient {
     public static boolean isWriteOutputToFile = true;
 
     // LOGGER
-    private final static Logger LOGGER = Logger.getLogger(Basic.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(Efficient.class.getName());
 
     // static variables for code execution
     public static final int[][] MISMATCH_COST =

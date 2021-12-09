@@ -52,24 +52,12 @@ public class Efficient_1111417799_3695883753 {
 
 
     public static void main(String[] args) {
-        List<String> argsList = Arrays.asList(args);
-        FILENAME = argsList.get(0);
+        FILENAME = args[0];
 
         initializeLogger();
         mapCytokynesToIndices();
-        execute(argsList);
-
-        if (isCustomEnabled) {
-            outputData
-                    .append("\n")
-                    .append(inputSize).append("\n")
-                    .append(timeValues).append("\n")
-                    .append(memoryValues).append("\n").append("\n");
-        }
-
-        if (isWriteOutputToFile) {
-            writeOutputToFile();
-        }
+        Pair alignment = execute();
+        prepareOutput(alignment);
     }
 
     public static void initializeLogger() {
@@ -86,15 +74,11 @@ public class Efficient_1111417799_3695883753 {
         hm.put('T', 3);
     }
 
-    public static void execute(List<String> argsList) {
-        List<Pair> inputStringPairs = getInputStrings(argsList);
-        for (Pair inputString: inputStringPairs) {
-            inputSize.add(inputString.a.length() + inputString.b.length());
-            LOGGER.log(Level.INFO, "Executing Divide & Conquer + Dynamic Programming Algorithm");
-            start = Instant.now();
-            Pair alignment = DivideAndConquerSequenceAlignment(inputString.a, inputString.b);
-            logMetricsAndPrepareOutput(alignment);
-        }
+    public static Pair execute() {
+        Pair inputString = generateInputStringsFromFiles();
+        LOGGER.log(Level.INFO, "Executing Divide & Conquer + Dynamic Programming Algorithm");
+        start = Instant.now();
+        return DivideAndConquerSequenceAlignment(inputString.a, inputString.b);
     }
 
     static class Pair {
@@ -140,55 +124,6 @@ public class Efficient_1111417799_3695883753 {
             this.indexes1 = indexes1;
             this.indexes2 = indexes2;
         }
-    }
-
-    private static List<Pair> getInputStrings(List<String> argsList) {
-        List<Pair> pairs = new ArrayList<>();
-        if (isCustomEnabled) {
-            LOGGER.log(Level.INFO, "Custom strings provided, skipping input creation from file");
-            for (int i = 0; i < 20; i++) {
-                Pair pair = generateRandomStrings();
-                pairs.add(pair);
-            }
-        } else {
-            LOGGER.log(Level.INFO, String.format("Generating input strings from file [%s]", FILENAME));
-            pairs.add(generateInputStringsFromFiles());
-        }
-        return pairs;
-    }
-
-    public static Pair generateRandomStrings() {
-        String base1 = "ACTG";
-        String base2 = "TACG";
-        String a = fetchInputStrings(shuffleString(base1), getRandomIndexArray());
-        String b = fetchInputStrings(shuffleString(base2), getRandomIndexArray());
-        LOGGER.log(Level.INFO, String.format("Random Strings are: [%s] and [%s]", a, b));
-        return new Pair(a, b);
-    }
-
-    private static String shuffleString(String s) {
-        StringBuilder ans = new StringBuilder();
-        List<Character> charList = new ArrayList<>();
-        for (char c: s.toCharArray()) {
-            charList.add(c);
-        }
-        Collections.shuffle(charList);
-        charList.forEach(ans::append);
-        return ans.toString();
-    }
-
-    public static List<Integer> getRandomIndexArray() {
-        Random random = new Random();
-        int count = random.nextInt(8) + 1;
-        int i = 1;
-        List<Integer> randomIndexList = new ArrayList<>();
-        while (randomIndexList.size() != count) {
-            int num = random.nextInt(i++ * 2) + 1;
-            if (!randomIndexList.contains(num))
-                randomIndexList.add(num);
-        }
-        LOGGER.log(Level.INFO, randomIndexList.toString());
-        return randomIndexList;
     }
 
     public static String fetchInputStrings(String base, List<Integer> indexes) {
@@ -453,36 +388,23 @@ public class Efficient_1111417799_3695883753 {
         return score;
     }
 
-    public static void logMetricsAndPrepareOutput(Pair alignment) {
-        end = Instant.now();
-        memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        prepareOutput(alignment);
-    }
-
     private static void prepareOutput(Pair alignment) {
         NWScore = calculateScore(alignment);
-        calculateAndSaveTimeRequired();
-        calculateAndSaveMemoryRequired();
+
+        end = Instant.now();
+        memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
+        totalTimeTaken = Duration.between(start, end).toNanosPart() / 1_000_000_000.0;
+        totalMemoryRequired = (memAfter - memBefore) / 1_024.0;
+
         outputData
                 .append(alignment).append("\n")
                 .append(NWScore).append("\n")
                 .append(totalTimeTaken).append("\n")
-                .append(totalMemoryRequired).append("\n").append("\n");
-    }
+                .append(totalMemoryRequired);
 
-    private static void calculateAndSaveTimeRequired() {
-        totalTimeTaken = Duration.between(start, end).toNanosPart() / 1_000_000_000.0;
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumIntegerDigits(2);
-        df.setMaximumFractionDigits(5);
-        timeValues.add(df.format(totalTimeTaken));
-    }
 
-    private static void calculateAndSaveMemoryRequired() {
-        totalMemoryRequired = (memAfter - memBefore) / 1_000.0;
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(3);
-        memoryValues.add(df.format(totalMemoryRequired));
+        if (isWriteOutputToFile) writeOutputToFile();
     }
 
     private static void writeOutputToFile() {

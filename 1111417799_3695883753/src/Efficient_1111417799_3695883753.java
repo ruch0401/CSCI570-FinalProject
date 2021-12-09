@@ -5,78 +5,50 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class Efficient_1111417799_3695883753 {
 
-    // static variables for making code customizable
-    public static boolean isCustomEnabled = false;
-    public static boolean isPrinting2DMatrixEnabled = false;
-    public static boolean isLoggingEnabled = false;
-    public static boolean isWriteOutputToFile = true;
-
-    // LOGGER
-    private final static Logger LOGGER = Logger.getLogger(Efficient_1111417799_3695883753.class.getName());
-
     // static variables for code execution
-    public static final int[][] MISMATCH_COST =
-            {
-                    {0, 110, 48, 94},
-                    {110, 0, 118, 48},
-                    {48, 118, 0, 110},
-                    {94, 48, 110, 0}
-            };
     public static final int GAP_PENALTY = 30;
-    public static Map<Character, Integer> hm = new HashMap<>();
     public static String FILENAME;
-    public static double NWScore;
-
-    // static variables to measure and store time and space requirement for code execution
-    public static Instant start;
-    public static Instant end;
-    public static long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-    public static long memAfter;
-    public static double totalTimeTaken;
-    public static double totalMemoryRequired;
-
-    // static list to store time and memory datapoints for different input sizes
-    public static List<Integer> inputSize = new ArrayList<>();
-    public static List<String> timeValues = new ArrayList<>();
-    public static List<String> memoryValues = new ArrayList<>();
 
     // static variable to store final output data which is written to the file - output.txt
     public static StringBuilder outputData = new StringBuilder();
 
 
     public static void main(String[] args) {
+        // Time calculation start
+        Instant timeBefore = Instant.now();
+        long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
         FILENAME = args[0];
-
-        initializeLogger();
-        mapCytokynesToIndices();
         Pair alignment = execute();
-        prepareOutput(alignment);
+        double score = calculateScore(alignment);
+
+        outputData
+                .append(alignment).append("\n")
+                .append(score).append("\n");
+
+        // Time calculation end
+        Instant timeAfter = Instant.now();
+        double time = Duration.between(timeBefore, timeAfter).toNanos() / 1_000_000_000.0;
+        outputData.append(time).append("\n");
+
+        // Memory calculation end
+        long memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        double memory = (memAfter - memBefore) / 1_024.0;
+        outputData.append(memory);
+
+        // write data to file
+        writeOutputToFile();
+
+        System.gc();
     }
 
-    public static void initializeLogger() {
-        if (isLoggingEnabled)
-            LOGGER.setLevel(Level.INFO);
-        else
-            LOGGER.setLevel(Level.OFF);
-    }
-
-    public static void mapCytokynesToIndices() {
-        hm.put('A', 0);
-        hm.put('C', 1);
-        hm.put('G', 2);
-        hm.put('T', 3);
-    }
 
     public static Pair execute() {
-        Pair inputString = generateInputStringsFromFiles();
-        LOGGER.log(Level.INFO, "Executing Divide & Conquer + Dynamic Programming Algorithm");
-        start = Instant.now();
+        Pair inputString = getInputStrings();
         return DivideAndConquerSequenceAlignment(inputString.a, inputString.b);
     }
 
@@ -125,7 +97,7 @@ public class Efficient_1111417799_3695883753 {
         }
     }
 
-    public static String fetchInputStrings(String base, List<Integer> indexes) {
+    public static String constructInputStrings(String base, List<Integer> indexes) {
         int lengthSupposedToBe = (int) (Math.pow(2, indexes.size())) * base.length();
         StringBuilder sb = null;
         for (int index : indexes) {
@@ -137,21 +109,21 @@ public class Efficient_1111417799_3695883753 {
         try {
             if (generatedStringLength == lengthSupposedToBe) return sb.toString();
         } catch (Exception exception) {
-            LOGGER.log(Level.SEVERE, "Actual and calculated length of the string do not match");
+            exception.printStackTrace();
             System.exit(1);
         }
         return null;
     }
 
-    public static Pair generateInputStringsFromFiles() {
-        List<String> data = fetchDataFromFile();
-        Input input = fetchInputComponents(data);
-        String a = fetchInputStrings(input.firstString, input.indexes1);
-        String b = fetchInputStrings(input.secondString, input.indexes2);
+    public static Pair getInputStrings() {
+        List<String> data = getInputFromFile();
+        Input input = extractInputComponents(data);
+        String a = constructInputStrings(input.firstString, input.indexes1);
+        String b = constructInputStrings(input.secondString, input.indexes2);
         return new Pair(a, b);
     }
 
-    private static List<String> fetchDataFromFile() {
+    private static List<String> getInputFromFile() {
         List<String> data = null;
         Path path = Path.of(FILENAME);
         try {
@@ -162,7 +134,7 @@ public class Efficient_1111417799_3695883753 {
         return data;
     }
 
-    private static Input fetchInputComponents(List<String> data) {
+    private static Input extractInputComponents(List<String> data) {
         int indexToSplit = 0;
         for (String d : data) {
             if (Pattern.matches("([ACGT])\\w+", d) && data.indexOf(d) != 0) {
@@ -202,15 +174,10 @@ public class Efficient_1111417799_3695883753 {
                 }
             }
         }
-        if (isPrinting2DMatrixEnabled) {
-            LOGGER.log(Level.INFO, "Printing DP Matrix enabled. Printing...");
-            print2DMatrix(dp);
-        }
         return printAlignment(a, b, dp);
     }
 
     public static Pair DivideAndConquerSequenceAlignment(String a, String b) {
-        LOGGER.log(Level.INFO, String.format("Recursing for: [%s, %s]", a, b));
         StringBuilder a1 = new StringBuilder();
         StringBuilder b1 = new StringBuilder();
         Pair ans = null;
@@ -310,6 +277,12 @@ public class Efficient_1111417799_3695883753 {
     }
 
     private static int getMismatchCost(char c1, char c2) {
+        int[][] MISMATCH_COST = {{0, 110, 48, 94}, {110, 0, 118, 48}, {48, 118, 0, 110}, {94, 48, 110, 0}};
+        Map<Character, Integer> hm = new HashMap<>();
+        hm.put('A', 0);
+        hm.put('C', 1);
+        hm.put('G', 2);
+        hm.put('T', 3);
         int i = hm.get(c1);
         int j = hm.get(c2);
         return MISMATCH_COST[i][j];
@@ -361,16 +334,6 @@ public class Efficient_1111417799_3695883753 {
         return new Pair(s1, s2);
     }
 
-    private static void print2DMatrix(int[][] dp) {
-        System.out.println("DP Matrix: ");
-        for (int[] ints : dp) {
-            for (int j = 0; j < dp[0].length; j++) {
-                System.out.print(ints[j] + "\t");
-            }
-            System.out.println();
-        }
-    }
-
     public static int calculateScore(Pair pair) {
         String a = pair.a;
         String b = pair.b;
@@ -385,25 +348,6 @@ public class Efficient_1111417799_3695883753 {
             }
         }
         return score;
-    }
-
-    private static void prepareOutput(Pair alignment) {
-        NWScore = calculateScore(alignment);
-
-        end = Instant.now();
-        memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-
-        totalTimeTaken = Duration.between(start, end).toNanosPart() / 1_000_000_000.0;
-        totalMemoryRequired = (memAfter - memBefore) / 1_024.0;
-
-        outputData
-                .append(alignment).append("\n")
-                .append(NWScore).append("\n")
-                .append(totalTimeTaken).append("\n")
-                .append(totalMemoryRequired);
-
-
-        if (isWriteOutputToFile) writeOutputToFile();
     }
 
     private static void writeOutputToFile() {

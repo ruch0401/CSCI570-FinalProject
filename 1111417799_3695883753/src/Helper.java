@@ -5,8 +5,8 @@ import java.util.Random;
 
 public class Helper {
     public static void main(String[] args) {
-        String base1 = shuffleString("ACGT");
-        String base2 = shuffleString("TGAC");
+        String base1 = "ACGT";
+        String base2 = "TGAC";
 
         List<Integer> randomIndexArray1 = getRandomIndexArray();
         List<Integer> randomIndexArray2 = getRandomIndexArray();
@@ -20,17 +20,6 @@ public class Helper {
         for (int elem: randomIndexArray2) {
             System.out.println(elem);
         }
-    }
-
-    private static String shuffleString(String s) {
-        StringBuilder ans = new StringBuilder();
-        List<Character> charList = new ArrayList<>();
-        for (char c: s.toCharArray()) {
-            charList.add(c);
-        }
-        Collections.shuffle(charList);
-        charList.forEach(ans::append);
-        return ans.toString();
     }
 
     public static List<Integer> getRandomIndexArray() {

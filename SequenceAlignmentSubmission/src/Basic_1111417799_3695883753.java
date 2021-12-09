@@ -42,34 +42,17 @@ public class Basic_1111417799_3695883753 {
     public static double totalTimeTaken;
     public static double totalMemoryRequired;
 
-    // static list to store time and memory datapoints for different input sizes
-    public static List<Integer> inputSize = new ArrayList<>();
-    public static List<String> timeValues = new ArrayList<>();
-    public static List<String> memoryValues = new ArrayList<>();
-
     // static variable to store final output data which is written to the file - output.txt
     public static StringBuilder outputData = new StringBuilder();
 
 
     public static void main(String[] args) {
-        List<String> argsList = Arrays.asList(args);
-        FILENAME = argsList.get(0);
+        FILENAME = args[0];
 
         initializeLogger();
         mapCytokynesToIndices();
-        execute(argsList);
-
-        if (isCustomEnabled) {
-            outputData
-                    .append("\n")
-                    .append(inputSize).append("\n")
-                    .append(timeValues).append("\n")
-                    .append(memoryValues).append("\n").append("\n");
-        }
-
-        if (isWriteOutputToFile) {
-            writeOutputToFile();
-        }
+        Pair alignment = execute();
+        prepareOutput(alignment);
     }
 
     public static void initializeLogger() {
@@ -86,15 +69,11 @@ public class Basic_1111417799_3695883753 {
         hm.put('T', 3);
     }
 
-    public static void execute(List<String> argsList) {
-        List<Pair> inputStringPairs = getInputStrings(argsList);
-        for (Pair inputString: inputStringPairs) {
-            inputSize.add(inputString.a.length() + inputString.b.length());
-            LOGGER.log(Level.INFO, "Executing Dynamic Programming (Needleman Wunsch) Algorithm");
-            start = Instant.now();
-            Pair alignment = NeedlemanWunsch(inputString.a, inputString.b);
-            logMetricsAndPrepareOutput(alignment);
-        }
+    public static Pair execute() {
+        Pair inputString = getInputStrings();
+        LOGGER.log(Level.INFO, "Executing Dynamic Programming (Needleman Wunsch) Algorithm");
+        start = Instant.now();
+        return NeedlemanWunsch(inputString.a, inputString.b);
     }
 
     static class Pair {
@@ -104,10 +83,6 @@ public class Basic_1111417799_3695883753 {
         Pair(String a, String b) {
             this.a = a;
             this.b = b;
-        }
-
-        public Pair add(Pair pair) {
-            return new Pair(this.a + pair.a, this.b + pair.b);
         }
 
         @Override
@@ -142,53 +117,20 @@ public class Basic_1111417799_3695883753 {
         }
     }
 
-    private static List<Pair> getInputStrings(List<String> argsList) {
-        List<Pair> pairs = new ArrayList<>();
+    private static Pair getInputStrings() {
         if (isCustomEnabled) {
             LOGGER.log(Level.INFO, "Custom strings provided, skipping input creation from file");
-            for (int i = 0; i < 20; i++) {
-                Pair pair = generateRandomStrings();
-                pairs.add(pair);
-            }
+            String base1 = ""; // TODO: Enter values using the Helper
+            String base2 = ""; // TODO: Enter values using the Helper
+            List<Integer> indexes1 = List.of(); // TODO: Enter values using the Helper
+            List<Integer> indexes2 = List.of(); // TODO: Enter values using the Helper
+            String a = fetchInputStrings(base1, indexes1);
+            String b = fetchInputStrings(base1, indexes2);
+            return new Pair(a, b);
         } else {
             LOGGER.log(Level.INFO, String.format("Generating input strings from file [%s]", FILENAME));
-            pairs.add(generateInputStringsFromFiles());
+            return generateInputStringsFromFiles();
         }
-        return pairs;
-    }
-
-    public static Pair generateRandomStrings() {
-        String base1 = "ACTG";
-        String base2 = "TACG";
-        String a = fetchInputStrings(shuffleString(base1), getRandomIndexArray());
-        String b = fetchInputStrings(shuffleString(base2), getRandomIndexArray());
-        LOGGER.log(Level.INFO, String.format("Random Strings are: [%s] and [%s]", a, b));
-        return new Pair(a, b);
-    }
-
-    private static String shuffleString(String s) {
-        StringBuilder ans = new StringBuilder();
-        List<Character> charList = new ArrayList<>();
-        for (char c: s.toCharArray()) {
-            charList.add(c);
-        }
-        Collections.shuffle(charList);
-        charList.forEach(ans::append);
-        return ans.toString();
-    }
-
-    public static List<Integer> getRandomIndexArray() {
-        Random random = new Random();
-        int count = random.nextInt(8) + 1;
-        int i = 1;
-        List<Integer> randomIndexList = new ArrayList<>();
-        while (randomIndexList.size() != count) {
-            int num = random.nextInt(i++ * 2) + 1;
-            if (!randomIndexList.contains(num))
-                randomIndexList.add(num);
-        }
-        LOGGER.log(Level.INFO, randomIndexList.toString());
-        return randomIndexList;
     }
 
     public static String fetchInputStrings(String base, List<Integer> indexes) {
@@ -353,36 +295,24 @@ public class Basic_1111417799_3695883753 {
         return score;
     }
 
-    public static void logMetricsAndPrepareOutput(Pair alignment) {
-        end = Instant.now();
-        memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        prepareOutput(alignment);
-    }
 
     private static void prepareOutput(Pair alignment) {
         NWScore = calculateScore(alignment);
-        calculateAndSaveTimeRequired();
-        calculateAndSaveMemoryRequired();
+
+        end = Instant.now();
+        memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
+        totalTimeTaken = Duration.between(start, end).toNanosPart() / 1_000_000_000.0;
+        totalMemoryRequired = (memAfter - memBefore) / 1_024.0;
+
         outputData
                 .append(alignment).append("\n")
                 .append(NWScore).append("\n")
                 .append(totalTimeTaken).append("\n")
-                .append(totalMemoryRequired).append("\n").append("\n");
-    }
+                .append(totalMemoryRequired);
 
-    private static void calculateAndSaveTimeRequired() {
-        totalTimeTaken = Duration.between(start, end).toNanosPart() / 1_000_000_000.0;
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumIntegerDigits(2);
-        df.setMaximumFractionDigits(5);
-        timeValues.add(df.format(totalTimeTaken));
-    }
 
-    private static void calculateAndSaveMemoryRequired() {
-        totalMemoryRequired = (memAfter - memBefore) / 1_000.0;
-        DecimalFormat df = new DecimalFormat("#");
-        df.setMaximumFractionDigits(3);
-        memoryValues.add(df.format(totalMemoryRequired));
+        if (isWriteOutputToFile) writeOutputToFile();
     }
 
     private static void writeOutputToFile() {

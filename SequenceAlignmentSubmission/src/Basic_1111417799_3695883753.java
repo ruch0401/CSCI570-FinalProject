@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 public class Basic_1111417799_3695883753 {
 
     // static variables for making code customizable
-    public static boolean isCustomEnabled = false;
     public static boolean isPrinting2DMatrixEnabled = false;
     public static boolean isLoggingEnabled = false;
     public static boolean isWriteOutputToFile = true;
@@ -70,7 +69,7 @@ public class Basic_1111417799_3695883753 {
     }
 
     public static Pair execute() {
-        Pair inputString = getInputStrings();
+        Pair inputString = generateInputStringsFromFiles();
         LOGGER.log(Level.INFO, "Executing Dynamic Programming (Needleman Wunsch) Algorithm");
         start = Instant.now();
         return NeedlemanWunsch(inputString.a, inputString.b);
@@ -114,22 +113,6 @@ public class Basic_1111417799_3695883753 {
             this.secondString = secondString;
             this.indexes1 = indexes1;
             this.indexes2 = indexes2;
-        }
-    }
-
-    private static Pair getInputStrings() {
-        if (isCustomEnabled) {
-            LOGGER.log(Level.INFO, "Custom strings provided, skipping input creation from file");
-            String base1 = ""; // TODO: Enter values using the Helper
-            String base2 = ""; // TODO: Enter values using the Helper
-            List<Integer> indexes1 = List.of(); // TODO: Enter values using the Helper
-            List<Integer> indexes2 = List.of(); // TODO: Enter values using the Helper
-            String a = fetchInputStrings(base1, indexes1);
-            String b = fetchInputStrings(base1, indexes2);
-            return new Pair(a, b);
-        } else {
-            LOGGER.log(Level.INFO, String.format("Generating input strings from file [%s]", FILENAME));
-            return generateInputStringsFromFiles();
         }
     }
 
@@ -294,7 +277,6 @@ public class Basic_1111417799_3695883753 {
         }
         return score;
     }
-
 
     private static void prepareOutput(Pair alignment) {
         NWScore = calculateScore(alignment);

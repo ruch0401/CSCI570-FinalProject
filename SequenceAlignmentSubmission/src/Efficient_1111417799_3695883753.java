@@ -37,7 +37,7 @@ public class Efficient_1111417799_3695883753 {
     // static variables to measure and store time and space requirement for code execution
     public static Instant start;
     public static Instant end;
-    public static long memBefore;
+    public static long memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     public static long memAfter;
     public static double totalTimeTaken;
     public static double totalMemoryRequired;
@@ -89,7 +89,6 @@ public class Efficient_1111417799_3695883753 {
     public static void execute(List<String> argsList) {
         List<Pair> inputStringPairs = getInputStrings(argsList);
         for (Pair inputString: inputStringPairs) {
-            memBefore = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
             inputSize.add(inputString.a.length() + inputString.b.length());
             LOGGER.log(Level.INFO, "Executing Divide & Conquer + Dynamic Programming Algorithm");
             start = Instant.now();

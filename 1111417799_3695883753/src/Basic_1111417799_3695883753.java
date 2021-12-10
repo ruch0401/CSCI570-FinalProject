@@ -41,7 +41,6 @@ public class Basic_1111417799_3695883753 {
         // Memory calculation end
         long memAfter = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         double memory = (double) (memAfter - memBefore) / 1_024.0;
-        System.out.println(memBefore + "\t" + memAfter);
         outputData.append(memory);
 
         // write data to file
@@ -117,7 +116,6 @@ public class Basic_1111417799_3695883753 {
         Input input = extractInputComponents(data);
         String a = constructInputStrings(input.firstString, input.indexes1);
         String b = constructInputStrings(input.secondString, input.indexes2);
-        System.out.println("Input size: " + (a.length() + b.length()));
         return new Pair(a, b);
     }
 

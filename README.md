@@ -2,6 +2,20 @@
 
 Click [here](SequenceAlignmentMaven/src/main/resources/project-description.pdf) for project description
 
+# Prerequisites
+
+Requires Java 16 installed on the local machine as the code written uses some of the functionalities provided by Java 16
+
+Please run the command - ```java --version``` or ```java -version``` to check the version currently installed on your
+machine You should get the output like this
+
+```
+java 16.0.2 2021-07-20 
+Java(TM) SE Runtime Environment (build 16.0.2+7-67)
+Java HotSpot(TM) 64-Bit Server VM (build 16.0.2+7-67, mixed mode, sharing)
+
+```
+
 # Basic Version
 
 ## Explanation
@@ -115,6 +129,64 @@ For inputs smaller than size 1000 (sum of the length of input strings), visualiz
 - CPUPlot-small.png - Plot that displays the time pattern across small problem sizes
 - MemoryPlot.png - Plot that displays the memory pattern across all problem sizes
 - MemoryPlot-small.png - Plot that displayss the memory pattern across small problem sizes
+
+## How to Execute
+
+Unzip the folder named "1111417799_3695883753.zip" and navigate to the location where the shell scripts are present.
+Open the terminal here and run the following commands:
+
+1. ```sh 1111417799_3695883753_basic.sh```
+2. ```sh 1111417799_3695883753_efficient.sh```
+
+Running each of these commands will generate an output.txt file (it will overwrite the contents of the file if it
+already exists)
+
+## Sample Output
+For input.txt content as follows - 
+
+```
+ACGT
+2
+1
+4
+8
+11
+13
+TGAC
+1
+4
+3
+10
+11
+22
+47
+21
+38
+```
+
+Basic Version - 
+```
+__________________________________________________ _________G________T_TG_____AC_G________T_T________
+TGTGTGTGATGTTGTGTGTGATTGTGTGTGATGTTGTGTTGTGTGTGATG GTGTGATGTGACACCACATGTGACACCACTGACACCACATGTGACACCAC
+53760.0
+0.175819
+6408.0859375
+```
+
+Efficient Version -
+```
+________A_________________________________________ _________________________________________T________
+TGTGTGTGATGTTGTGTGTGATTGTGTGTGATGTTGTGTTGTGTGTGATG GTGTGATGTGACACCACATGTGACACCACTGACACCACATGTGACACCAC
+53760.0
+0.210404
+456.5703125
+```
+
+- 1st Line: Alignment of String A
+- 2nd Line: Alignment of String B
+- 3rd Line: Alignment Score
+- 4th Line: Time required for the code to complete (in seconds)
+- 5th Line: Memory required for the entire code (in KBs)
 
 # Contribution towards the project:
 

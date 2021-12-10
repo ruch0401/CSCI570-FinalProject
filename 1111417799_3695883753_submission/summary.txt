@@ -27,17 +27,51 @@ Running each of these commands will generate an output.txt file (it will overwri
 
 SAMPLE OUTPUT
 -------------------------------------
-__________________________________________________ _______________________________T__________________
-TGTTGTTGTGTTGTTGTGTTGTTGTGTTGTTGTGTTGTGTGTTGTTGTTG CTGTTGTGACACGACACCACGACACATGTTGTGACACGACACCACGACAC
-1964160.0
-0.771825
-54985.671875
+For input.txt content as follows -
 
-1st Line: Alignment of String A
-2nd Line: Alignment of String B
-3rd Line: Alignment Score
-4th Line: Time required for the code to complete (in seconds)
-5th Line: Memory required for the entire code (in KBs)
+```
+ACGT
+2
+1
+4
+8
+11
+13
+TGAC
+1
+4
+3
+10
+11
+22
+47
+21
+38
+```
+
+Basic Version -
+```
+__________________________________________________ _________G________T_TG_____AC_G________T_T________
+TGTGTGTGATGTTGTGTGTGATTGTGTGTGATGTTGTGTTGTGTGTGATG GTGTGATGTGACACCACATGTGACACCACTGACACCACATGTGACACCAC
+53760.0
+0.175819
+6408.0859375
+```
+
+Efficient Version -
+```
+________A_________________________________________ _________________________________________T________
+TGTGTGTGATGTTGTGTGTGATTGTGTGTGATGTTGTGTTGTGTGTGATG GTGTGATGTGACACCACATGTGACACCACTGACACCACATGTGACACCAC
+53760.0
+0.210404
+456.5703125
+```
+
+- 1st Line: Alignment of String A
+- 2nd Line: Alignment of String B
+- 3rd Line: Alignment Score
+- 4th Line: Time required for the code to complete (in seconds)
+- 5th Line: Memory required for the entire code (in KBs)
 
 ==============================================================================================================================================================================
 

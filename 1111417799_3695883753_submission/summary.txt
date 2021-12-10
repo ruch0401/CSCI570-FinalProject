@@ -85,7 +85,7 @@ This is due to the fact that it is dominated by the cost of storing the array (o
 
 ==============================================================================================================================================================================
 
-OPTIMISED VERSION - EXPLANATION
+OPTIMIZED VERSION - EXPLANATION
 -------------------------------------
 In memory efficient solution, we bring the space requirement down to linear while reducing the running time by at most an additional constant factor.
 
@@ -99,7 +99,7 @@ MEMORY
 -------------------------------------
 For small problem sizes, the memory required for the efficient version of the sequence alignment is greater than or equal to the basic version. But the space optimization is clearly visible when the problem size increases. In the graph, we can clearly see an inflection point when the efficient version outperforms the basic version in terms of memory.
 
-OPTIMISED VERSION - BACKGROUND
+OPTIMIZED VERSION - BACKGROUND
 -------------------------------------
 The crucial changes in the basic algorithm:
 2.1
@@ -115,7 +115,7 @@ Now combining the forward and backward formulation gives us the the length of th
 Last step is to divide G(XY) along its center column and compute the value of f(i, n/2) and g(i, n/2) for each value of i, using the space-efficient algorithm twice for each section. We can then determine the minimum value of f(i, n/2) + g(i, n/2), and conclude that there is a shortest corner-to-corner path passing through the node (i, n/2). Given this, we can search for the shortest path recursively in the portion of G(XY) between (0, 0) and (i, n/2) and in the portion between (i, n/2) and (m, n).
 In running the algorithm, we maintain a globally accessible list P which will hold nodes on the shortest corner-to-corner path as they are discovered.
 
-BASIC VERSION - COMPLEXITY ANALYSIS
+OPTIMIZED VERSION - COMPLEXITY ANALYSIS
 -------------------------------------
 - Time Complexity: O(mn), where m = length of input string 1, n = length of input string 2
 This is because it takes constant time to determine the value in each of the (m x n) cells of the array DP.

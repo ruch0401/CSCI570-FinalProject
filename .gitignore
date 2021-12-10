@@ -30,3 +30,7 @@ SequenceAlignment/SequenceAlignment.iml
 *.iml
 target/
 .class
+/out/production/1111417799_3695883753/input.txt
+/out/production/SequenceAlignmentSubmission/input.txt
+/out/production/1111417799_3695883753/output.txt
+/out/production/SequenceAlignmentSubmission/output.txt

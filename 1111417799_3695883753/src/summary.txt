@@ -10,6 +10,36 @@ java 16.0.2 2021-07-20
 Java(TM) SE Runtime Environment (build 16.0.2+7-67)
 Java HotSpot(TM) 64-Bit Server VM (build 16.0.2+7-67, mixed mode, sharing)
 
+==============================================================================================================================================================================
+
+HOW TO EXECUTE
+-------------------------------------
+Unzip the folder named "1111417799_3695883753.zip" and navigate to the location where the shell scripts are present
+Open terminal here
+Run the following commands:
+
+1. sh 1111417799_3695883753_basic.sh
+2. sh 1111417799_3695883753_efficient.sh
+
+Running each of these commands will generate an output.txt file (it will overwrite the contents of the file if it already exists)
+
+==============================================================================================================================================================================
+
+SAMPLE OUTPUT
+-------------------------------------
+__________________________________________________ _______________________________T__________________
+TGTTGTTGTGTTGTTGTGTTGTTGTGTTGTTGTGTTGTGTGTTGTTGTTG CTGTTGTGACACGACACCACGACACATGTTGTGACACGACACCACGACAC
+1964160.0
+0.771825
+54985.671875
+
+1st Line: Alignment of String A
+2nd Line: Alignment of String B
+3rd Line: Alignment Score
+4th Line: Time required for the code to complete (in seconds)
+5th Line: Memory required for the entire code (in KBs)
+
+==============================================================================================================================================================================
 
 BASIC VERSION - EXPLANATION
 -------------------------------------

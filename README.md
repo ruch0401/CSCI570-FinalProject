@@ -22,7 +22,7 @@ This is due to the fact that it is dominated by the cost of storing the array (o
 ## Explanation
 In memory efficient solution, we bring the space requirement down to linear while reducing the running time by at most an additional constant factor.
 
-## OBSERVATION
+## Observation
 ### Time
 The efficient version always takes time that is greater than or equal to time taken by the basic version due to the fact that one can optimize either time or space, and in this case, space is optimized at the expense of time.
 
@@ -41,7 +41,7 @@ In running the algorithm, we maintain a globally accessible list P which will ho
 ### Time Complexity
 O(mn), where m = length of input string 1, n = length of input string 2
 This is because it takes constant time to determine the value in each of the (m x n) cells of the array DP.
-### Space Complexity: 
+### Space Complexity
 O(m + n), where m = length of input string 1, n = length of input string 2
 This is bevause we apply recursive calls sequentially and reuse the working space from one call to the next. Since we only work on one recursive call at a time, the total space usage is O(m + n)
 

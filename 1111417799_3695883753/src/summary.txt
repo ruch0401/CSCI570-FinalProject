@@ -1,3 +1,16 @@
+PREREQUISITES
+-------------------------------------
+Requires Java 16 installed on the local machine as the code written uses some of the functionalities provided by Java 16
+
+Please run the command - 'java --version' or 'java -version' to check the version currently installed on your machine
+You should get the output like this
+
+- java --version
+java 16.0.2 2021-07-20
+Java(TM) SE Runtime Environment (build 16.0.2+7-67)
+Java HotSpot(TM) 64-Bit Server VM (build 16.0.2+7-67, mixed mode, sharing)
+
+
 BASIC VERSION - EXPLANATION
 -------------------------------------
 We compute the optimal alignment between two strings X and Y of lengths m and n by building up the two-dimensional m-by-n array which represents the subproblems to be solved. DP(x, y), which turns out to be equivalent to constructing a graph G(XY) with (m x n) nodes laid out in a grid and look for the cheapest path between opposite corners.

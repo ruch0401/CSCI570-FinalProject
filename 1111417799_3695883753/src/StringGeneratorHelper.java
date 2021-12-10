@@ -1,9 +1,8 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class Helper {
+public class StringGeneratorHelper {
     public static void main(String[] args) {
         String base1 = "ACGT";
         String base2 = "TGAC";

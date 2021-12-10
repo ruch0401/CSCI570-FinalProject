@@ -120,6 +120,7 @@ public class Efficient_1111417799_3695883753 {
         Input input = extractInputComponents(data);
         String a = constructInputStrings(input.firstString, input.indexes1);
         String b = constructInputStrings(input.secondString, input.indexes2);
+        System.out.println("Input size: " + (a.length() + b.length()));
         return new Pair(a, b);
     }
 
